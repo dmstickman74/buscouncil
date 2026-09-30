@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 import { fmtRelative } from "@/lib/format";
-import { Button, Card, CardBody, PageHeader, Spinner, Badge } from "@/components/ui";
+import { Button, Card, Spinner, Badge } from "@/components/ui";
 import type { ConversationSummary } from "@/lib/types";
 
 export function ConversationsPage() {
@@ -15,27 +15,49 @@ export function ConversationsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const unreadCount = conversations.filter((c) => c.unread).length;
+
   return (
     <div>
-      <PageHeader
-        title="Messages"
-        description="Direct and group messages with council members."
-        actions={<Link to="/messages/new"><Button>New Message</Button></Link>}
-      />
+      {/* Hero header */}
+      <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark p-6 pb-7 text-white mb-6 -mt-2">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
+            <p className="text-white/60 text-sm mt-1">Direct and group messages with council members</p>
+          </div>
+          <div className="flex items-center gap-4">
+            {unreadCount > 0 && (
+              <div className="text-right">
+                <div className="text-2xl font-bold">{unreadCount}</div>
+                <div className="text-xs text-white/50">unread</div>
+              </div>
+            )}
+            <Link to="/messages/new">
+              <Button variant="green" size="sm">
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                New Message
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-12"><Spinner className="h-8 w-8" /></div>
       ) : conversations.length === 0 ? (
-        <Card>
-          <CardBody className="text-center py-14">
-            <div className="w-14 h-14 rounded-2xl bg-navy-50 text-navy flex items-center justify-center mx-auto mb-4">
-              <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
-            </div>
-            <p className="text-txt2 mb-1 font-medium">No messages yet</p>
-            <p className="text-sm text-txt3 mb-5">Start a conversation with a fellow council member.</p>
-            <Link to="/messages/new"><Button>New Message</Button></Link>
-          </CardBody>
-        </Card>
+        <div className="rounded-2xl bg-surface-alt border border-border-light py-16 px-6 text-center">
+          <div className="flex justify-center gap-3 mb-6">
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-navy to-navy-light text-white flex items-center justify-center text-sm font-bold -rotate-6">A</div>
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-navy-light to-navy text-white flex items-center justify-center text-sm font-bold rotate-6 -mt-2">B</div>
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-navy to-navy-dark text-white flex items-center justify-center text-sm font-bold -rotate-3">C</div>
+          </div>
+          <p className="text-lg font-semibold text-txt mb-1">Start a conversation</p>
+          <p className="text-sm text-txt3 max-w-xs mx-auto mb-5">
+            Connect with your fellow council members through direct or group messages.
+          </p>
+          <Link to="/messages/new"><Button>New Message</Button></Link>
+        </div>
       ) : (
         <Card>
           <div className="divide-y divide-border-light">
@@ -51,10 +73,12 @@ export function ConversationsPage() {
                   to={`/messages/${c.id}`}
                   className="group flex items-center gap-4 px-5 py-4 hover:bg-surface-alt transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-navy to-navy-light text-white flex items-center justify-center text-sm font-bold shrink-0">
-                    {c.is_group ? (
-                      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
-                    ) : initials}
+                  <div className="relative">
+                    <div className={`w-11 h-11 rounded-full bg-gradient-to-br from-navy to-navy-light text-white flex items-center justify-center text-sm font-bold shrink-0 ${hasUnread ? "ring-2 ring-gold ring-offset-2 ring-offset-surface" : ""}`}>
+                      {c.is_group ? (
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                      ) : initials}
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -62,15 +86,19 @@ export function ConversationsPage() {
                         {c.title || memberNames.join(", ") || "Conversation"}
                       </span>
                       {c.is_group && <Badge color="blue">Group</Badge>}
-                      {hasUnread && <span className="w-2 h-2 rounded-full bg-gold shrink-0" />}
                     </div>
                     {preview && (
-                      <div className="text-xs text-txt3 mt-1 truncate">{preview}</div>
+                      <div className={`text-xs mt-1 truncate ${hasUnread ? "text-txt2" : "text-txt3"}`}>{preview}</div>
                     )}
                   </div>
-                  {c.last_message_at && (
-                    <span className="text-xs text-txt3 shrink-0">{fmtRelative(c.last_message_at)}</span>
-                  )}
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    {c.last_message_at && (
+                      <span className="text-xs text-txt3">{fmtRelative(c.last_message_at)}</span>
+                    )}
+                    {hasUnread && (
+                      <span className="w-5 h-5 rounded-full bg-gold text-white text-[10px] font-bold flex items-center justify-center">!</span>
+                    )}
+                  </div>
                 </Link>
               );
             })}

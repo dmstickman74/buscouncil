@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, type FormEvent } from "react";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { fmtRelative, fmtFileSize } from "@/lib/format";
-import { Button, Card, CardBody, PageHeader, Spinner, Badge, Input } from "@/components/ui";
+import { Button, Card, Spinner, Badge } from "@/components/ui";
 import type { Document } from "@/lib/types";
 
 const CATEGORIES = ["all", "agenda", "minutes", "presentation", "general"] as const;
@@ -20,6 +20,7 @@ export function DocumentsPage() {
   const [category, setCategory] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const councilId = identity?.council_id;
@@ -33,62 +34,123 @@ export function DocumentsPage() {
       .finally(() => setLoading(false));
   }, [councilId, category]);
 
-  async function handleUpload(e: FormEvent) {
-    e.preventDefault();
-    if (!councilId || !fileRef.current?.files?.[0]) return;
+  async function uploadFile(file: File) {
+    if (!councilId) return;
     setUploading(true);
     try {
       const form = new FormData();
-      form.append("file", fileRef.current.files[0]);
+      form.append("file", file);
       const doc = await api<Document>(`/councils/${councilId}/documents`, {
         method: "POST",
         body: form,
         headers: {},
       });
       setDocs((prev) => [doc, ...prev]);
-      fileRef.current.value = "";
     } finally {
       setUploading(false);
     }
+  }
+
+  async function handleUpload(e: FormEvent) {
+    e.preventDefault();
+    if (!fileRef.current?.files?.[0]) return;
+    await uploadFile(fileRef.current.files[0]);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFile(file);
   }
 
   function downloadUrl(docId: number) {
     return `/api/councils/${councilId}/documents/${docId}/download`;
   }
 
+  const categoryCounts = docs.reduce((acc, d) => {
+    acc[d.category] = (acc[d.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
     <div>
-      <PageHeader
-        title="Documents"
-        description="Meeting materials, presentations, and shared files."
-      />
-
-      <Card className="mb-6">
-        <CardBody>
-          <form onSubmit={handleUpload} className="flex items-end gap-3 flex-wrap">
-            <div className="flex-1 min-w-48">
-              <Input label="Upload a document" type="file" ref={fileRef} required />
+      {/* Hero header */}
+      <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark p-6 pb-7 text-white mb-6 -mt-2">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Documents</h1>
+            <p className="text-white/60 text-sm mt-1">Meeting materials, presentations, and shared files</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-2xl font-bold">{docs.length}</div>
+              <div className="text-xs text-white/50">files</div>
             </div>
-            <Button type="submit" disabled={uploading}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
-              {uploading ? "Uploading..." : "Upload"}
-            </Button>
-          </form>
-        </CardBody>
-      </Card>
+          </div>
+        </div>
+      </div>
 
+      {/* Upload dropzone */}
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        className={`relative rounded-2xl border-2 border-dashed transition-all mb-6 ${
+          dragOver
+            ? "border-navy bg-navy-50 scale-[1.01]"
+            : "border-border-light bg-surface hover:border-navy/30 hover:bg-surface-alt"
+        }`}
+      >
+        <form onSubmit={handleUpload} className="flex flex-col items-center justify-center py-8 px-4">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 transition-colors ${
+            dragOver ? "bg-navy text-white" : "bg-navy-50 text-navy"
+          }`}>
+            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+          </div>
+          <p className="text-sm font-medium text-txt mb-1">
+            {dragOver ? "Drop to upload" : "Drag a file here or click to browse"}
+          </p>
+          <p className="text-xs text-txt3 mb-3">PDF, Word, PowerPoint, or any document</p>
+          <div className="flex items-center gap-3">
+            <input type="file" ref={fileRef} className="hidden" onChange={(e) => {
+              if (e.target.files?.[0]) uploadFile(e.target.files[0]);
+              e.target.value = "";
+            }} />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? "Uploading..." : "Choose File"}
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Category filter pills */}
       <div className="flex gap-2 mb-5 flex-wrap">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
               category === cat
                 ? "bg-navy text-white shadow-sm"
                 : "bg-surface border border-border-light text-txt2 hover:border-navy/20 hover:text-navy"
             }`}
           >
+            {cat !== "all" && <span className="opacity-70">{CATEGORY_ICONS[cat]}</span>}
             {cat}
+            {cat === "all" && docs.length > 0 && (
+              <span className={`ml-0.5 text-xs ${category === cat ? "text-white/70" : "text-txt3"}`}>{docs.length}</span>
+            )}
+            {cat !== "all" && categoryCounts[cat] && (
+              <span className={`ml-0.5 text-xs ${category === cat ? "text-white/70" : "text-txt3"}`}>{categoryCounts[cat]}</span>
+            )}
           </button>
         ))}
       </div>
@@ -96,21 +158,23 @@ export function DocumentsPage() {
       {loading ? (
         <div className="flex justify-center py-12"><Spinner className="h-8 w-8" /></div>
       ) : docs.length === 0 ? (
-        <Card>
-          <CardBody className="text-center py-14">
-            <div className="w-14 h-14 rounded-2xl bg-navy-50 text-navy flex items-center justify-center mx-auto mb-4">
-              <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9.75m3 0H9.75m0 0v3m3-3v3M5.625 2.25H9a3.375 3.375 0 013.375 3.375v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375v2.625M5.625 2.25c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9H5.625z" /></svg>
-            </div>
-            <p className="text-txt2 mb-1 font-medium">No documents yet</p>
-            <p className="text-sm text-txt3">Upload meeting materials to share with your council.</p>
-          </CardBody>
-        </Card>
+        <div className="rounded-2xl bg-surface-alt border border-border-light py-16 px-6 text-center">
+          <div className="flex justify-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-navy-50 text-navy flex items-center justify-center -rotate-6">{CATEGORY_ICONS.agenda}</div>
+            <div className="w-12 h-12 rounded-2xl bg-green/10 text-green-dark flex items-center justify-center rotate-3 -mt-2">{CATEGORY_ICONS.presentation}</div>
+            <div className="w-12 h-12 rounded-2xl bg-gold/10 text-gold flex items-center justify-center -rotate-3">{CATEGORY_ICONS.minutes}</div>
+          </div>
+          <p className="text-lg font-semibold text-txt mb-1">No documents yet</p>
+          <p className="text-sm text-txt3 max-w-xs mx-auto">
+            Upload meeting materials, agendas, and presentations to share with your council.
+          </p>
+        </div>
       ) : (
         <Card>
           <div className="divide-y divide-border-light">
             {docs.map((doc) => (
               <div key={doc.id} className="group flex items-center gap-4 px-5 py-3.5 hover:bg-surface-alt transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-navy-50 text-navy flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-navy-50 text-navy flex items-center justify-center shrink-0 group-hover:bg-navy group-hover:text-white transition-colors">
                   {CATEGORY_ICONS[doc.category] || CATEGORY_ICONS.general}
                 </div>
                 <div className="flex-1 min-w-0">
