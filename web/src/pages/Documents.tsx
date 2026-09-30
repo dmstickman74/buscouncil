@@ -77,7 +77,7 @@ export function DocumentsPage() {
   return (
     <div>
       {/* Hero header */}
-      <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark p-6 pb-7 text-white mb-6 -mt-2">
+      <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark px-8 py-6 pb-7 text-white mb-6 -mt-2">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Documents</h1>

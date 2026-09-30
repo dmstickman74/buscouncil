@@ -115,7 +115,7 @@ export function MeetingsPage() {
         <div className="space-y-6">
           {/* Hero — next meeting or empty state */}
           {nextMeeting ? (
-            <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark p-6 pb-7 text-white -mt-1">
+            <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark px-8 py-6 pb-7 text-white -mt-1">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Next Meeting</div>
                 {canManage && (
@@ -155,7 +155,7 @@ export function MeetingsPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark p-6 pb-7 text-white -mt-1">
+            <div className="rounded-2xl bg-gradient-to-br from-navy via-navy-light to-navy-dark px-8 py-6 pb-7 text-white -mt-1">
               <div className="flex items-center gap-5">
                 <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
                   <svg width="36" height="36" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="text-white/40"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
