@@ -84,7 +84,7 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 28px 24px;
 }
 
 .header {
@@ -254,6 +254,6 @@ body {
 
 @media (max-width: 768px) {
   .header-nav { display: none; }
-  .container { padding: 16px 12px; }
+  .container { padding: 20px 16px; }
   .header-logo .portal-name { display: none; }
 }

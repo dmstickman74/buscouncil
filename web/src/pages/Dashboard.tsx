@@ -86,7 +86,7 @@ export function DashboardPage() {
   const roleLabel = identity?.council_role ? COUNCIL_ROLE_LABELS[identity.council_role] || identity.council_role : null;
 
   return (
-    <div className="-mt-6 -mx-4 sm:-mx-4">
+    <div className="-mt-7 -mx-6 sm:-mx-6">
       {/* Welcome hero */}
       <div className="bg-gradient-to-br from-navy via-navy-light to-navy-dark px-6 sm:px-8 py-8 sm:py-10 mb-6">
         <div className="max-w-[1200px] mx-auto">
@@ -128,7 +128,7 @@ export function DashboardPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 sm:px-4 max-w-[1200px] mx-auto">
+      <div className="px-6 sm:px-6 max-w-[1200px] mx-auto">
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <StatCard
