@@ -34,6 +34,7 @@
   --color-navy: #003A49;
   --color-navy-light: #0D4D5C;
   --color-navy-dark: #002A36;
+  --color-navy-50: #E6F0F2;
 
   /* ASLA Brand — Accent */
   --color-green: #81BC00;
@@ -47,12 +48,12 @@
   /* Backgrounds */
   --color-cream: #F4F2ED;
   --color-surface: #FFFFFF;
-  --color-surface-alt: #E7EDDA;
+  --color-surface-alt: #F7FAF2;
   --color-sage: #E7EDDA;
 
   /* Borders */
-  --color-border: #D0D0D0;
-  --color-border-light: #E0E0E0;
+  --color-border: #D4CFC1;
+  --color-border-light: #E5E1D8;
 
   /* Text */
   --color-txt: #2D2D2D;
@@ -64,10 +65,11 @@
   --color-blue: #5B9BD5;
 
   /* Elevation */
-  --shadow-sm: 0 2px 8px rgba(0, 58, 73, 0.05);
-  --shadow-md: 0 4px 16px rgba(0, 58, 73, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 58, 73, 0.10);
-  --radius-card: 8px;
+  --shadow-sm: 0 1px 3px rgba(0, 58, 73, 0.06), 0 1px 2px rgba(0, 58, 73, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 58, 73, 0.07), 0 2px 4px rgba(0, 58, 73, 0.04);
+  --shadow-lg: 0 12px 32px rgba(0, 58, 73, 0.10), 0 4px 8px rgba(0, 58, 73, 0.05);
+  --radius-card: 12px;
+  --radius-pill: 24px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,7 +90,7 @@ body {
 .header {
   background: var(--color-navy);
   color: white;
-  padding: 0 16px;
+  padding: 0 24px;
   height: 56px;
   display: flex;
   align-items: center;
@@ -96,7 +98,17 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px rgba(0, 58, 73, 0.2);
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-green), var(--color-green-light));
 }
 
 .header-logo {

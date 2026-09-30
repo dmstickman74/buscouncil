@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "react";
 export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`bg-surface border border-border rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] ${className}`}
+      className={`bg-surface border border-border-light rounded-[var(--radius-card)] shadow-sm ${className}`}
       {...props}
     />
   );
@@ -12,7 +12,7 @@ export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement
 export function CardHeader({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-5 py-4 border-b border-border-light ${className}`}
+      className={`px-5 py-3.5 border-b border-border-light ${className}`}
       {...props}
     />
   );
