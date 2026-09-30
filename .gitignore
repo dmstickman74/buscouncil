@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+web/node_modules/
+
+# Build output
+web/dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Uploads (user content)
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic
+alembic/__pycache__/
+
+# Fonts (licensed, not redistributable)
+web/public/fonts/*.otf

@@ -1,0 +1,247 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Retina";
+  src: url("/fonts/Retina-ExLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Retina";
+  src: url("/fonts/Retina-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Retina";
+  src: url("/fonts/Retina-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Retina";
+  src: url("/fonts/Retina-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ASLA Brand — Primary */
+  --color-navy: #003A49;
+  --color-navy-light: #0D4D5C;
+  --color-navy-dark: #002A36;
+
+  /* ASLA Brand — Accent */
+  --color-green: #81BC00;
+  --color-green-light: #95D600;
+  --color-green-dark: #6B9E00;
+
+  /* ASLA Brand — Gold (awards, highlights) */
+  --color-gold: #C9A227;
+  --color-gold-light: #D4B44A;
+
+  /* Backgrounds */
+  --color-cream: #F4F2ED;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #E7EDDA;
+  --color-sage: #E7EDDA;
+
+  /* Borders */
+  --color-border: #D0D0D0;
+  --color-border-light: #E0E0E0;
+
+  /* Text */
+  --color-txt: #2D2D2D;
+  --color-txt2: #4A4A4A;
+  --color-txt3: #9E9E9E;
+
+  /* Semantic */
+  --color-red: #E53935;
+  --color-blue: #5B9BD5;
+
+  /* Elevation */
+  --shadow-sm: 0 2px 8px rgba(0, 58, 73, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 58, 73, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 58, 73, 0.10);
+  --radius-card: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Retina", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-txt);
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.header {
+  background: var(--color-navy);
+  color: white;
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+}
+
+.header-logo {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo img {
+  height: 28px;
+  width: auto;
+}
+
+.header-logo .divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.25);
+}
+
+.header-logo .portal-name {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-nav a {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.header-nav a:hover,
+.header-nav a.active {
+  color: white;
+  background: rgba(255,255,255,0.12);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-bell {
+  position: relative;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.notification-bell:hover { color: white; }
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  background: var(--color-red);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.user-menu-trigger:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  padding: 4px;
+  z-index: 100;
+}
+
+.user-menu-dropdown a,
+.user-menu-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--color-txt);
+  text-decoration: none;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.user-menu-dropdown a:hover,
+.user-menu-dropdown button:hover {
+  background: var(--color-surface-alt);
+}
+
+@media (max-width: 768px) {
+  .header-nav { display: none; }
+  .container { padding: 16px 12px; }
+  .header-logo .portal-name { display: none; }
+}

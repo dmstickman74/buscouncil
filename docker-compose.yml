@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: council-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: council
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-council}
+      POSTGRES_DB: council_portal
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U council -d council_portal"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://council:${POSTGRES_PASSWORD:-council}@postgres:5432/council_portal
+      SECRET_KEY: ${SECRET_KEY:-council-dev-secret-change-in-prod}
+      FLASK_SECRET_KEY: ${SECRET_KEY:-council-dev-secret-change-in-prod}
+    expose:
+      - "8000"
+    volumes:
+      - uploads:/app/uploads
+
+  caddy:
+    build:
+      context: .
+      dockerfile: Caddyfile.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:
