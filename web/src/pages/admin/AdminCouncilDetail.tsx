@@ -1,10 +1,17 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "@/lib/api";
-import { fmtRelative } from "@/lib/format";
-import { Button, Card, CardBody, CardHeader, PageHeader, Spinner, Badge, Input } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, PageHeader, Spinner, Badge } from "@/components/ui";
 import type { Council, CouncilMember, User } from "@/lib/types";
 import { COUNCIL_ROLES, COUNCIL_ROLE_LABELS } from "@/lib/types";
+
+const ROLE_COLORS: Record<string, string> = {
+  chair: "gold",
+  vice_chair_membership: "blue",
+  vice_chair_programming: "blue",
+  firm_member: "sage",
+  industry_member: "green",
+};
 
 export function AdminCouncilDetailPage() {
   const { councilId } = useParams();
@@ -75,13 +82,24 @@ export function AdminCouncilDetailPage() {
   }
 
   if (!council) {
-    return <PageHeader title="Council not found" />;
+    return (
+      <div className="text-center py-16">
+        <div className="w-14 h-14 rounded-2xl bg-red/10 text-red flex items-center justify-center mx-auto mb-4">
+          <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+        </div>
+        <h1 className="text-xl font-bold text-txt mb-1">Council not found</h1>
+        <p className="text-sm text-txt3">It may have been removed.</p>
+      </div>
+    );
   }
 
   return (
     <div>
       <div className="mb-4">
-        <Link to="/admin" className="text-sm text-navy hover:underline">&larr; Back to Admin</Link>
+        <Link to="/admin" className="inline-flex items-center gap-1 text-sm text-navy hover:underline">
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+          Back to Admin
+        </Link>
       </div>
 
       <PageHeader
@@ -89,7 +107,12 @@ export function AdminCouncilDetailPage() {
         description={council.description || undefined}
         actions={
           <Button variant="secondary" size="sm" onClick={() => setShowAddForm(!showAddForm)}>
-            {showAddForm ? "Cancel" : "Add Member"}
+            {showAddForm ? "Cancel" : (
+              <>
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
+                Add Member
+              </>
+            )}
           </Button>
         }
       />
@@ -103,7 +126,7 @@ export function AdminCouncilDetailPage() {
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                  className="w-full rounded-xl border border-border-light bg-surface px-3 py-2 text-sm"
                   required
                 >
                   <option value="">Select a user...</option>
@@ -119,7 +142,7 @@ export function AdminCouncilDetailPage() {
                 <select
                   value={addRole}
                   onChange={(e) => setAddRole(e.target.value)}
-                  className="rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                  className="rounded-xl border border-border-light bg-surface px-3 py-2 text-sm"
                 >
                   {COUNCIL_ROLES.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -136,15 +159,23 @@ export function AdminCouncilDetailPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="font-semibold text-txt">Members ({members.length})</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-txt">Members</h2>
+            <Badge color="sage">{members.length}</Badge>
+          </div>
         </CardHeader>
         <div className="divide-y divide-border-light">
           {members.length === 0 ? (
-            <div className="p-5 text-sm text-txt3">No members yet.</div>
+            <div className="text-center py-10">
+              <div className="w-12 h-12 rounded-xl bg-navy-50 text-navy flex items-center justify-center mx-auto mb-3">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+              </div>
+              <p className="text-sm text-txt3">No members yet. Add members above.</p>
+            </div>
           ) : (
             members.map((m) => (
-              <div key={m.id} className="flex items-center gap-4 px-5 py-3">
-                <div className="w-10 h-10 rounded-full bg-navy text-white flex items-center justify-center text-sm font-bold shrink-0">
+              <div key={m.id} className="flex items-center gap-4 px-5 py-3.5">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-navy to-navy-light text-white flex items-center justify-center text-sm font-bold shrink-0">
                   {m.display_name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -155,13 +186,13 @@ export function AdminCouncilDetailPage() {
                 <select
                   value={m.role}
                   onChange={(e) => handleRoleChange(m.user_id, e.target.value)}
-                  className="rounded-lg border border-border bg-surface px-2 py-1 text-xs"
+                  className="rounded-xl border border-border-light bg-surface px-2 py-1 text-xs"
                 >
                   {COUNCIL_ROLES.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
                   ))}
                 </select>
-                <Badge color={m.role.startsWith("vice_chair") ? "blue" : m.role === "chair" ? "gold" : m.role === "industry_member" ? "green" : "gray"}>
+                <Badge color={(ROLE_COLORS[m.role] || "gray") as any}>
                   {COUNCIL_ROLE_LABELS[m.role] || m.role}
                 </Badge>
                 <Button
